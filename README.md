@@ -14,6 +14,11 @@
 3. 点击界面中的“一键提取最新 Token”按钮，程序会自动获取并写入系统剪贴板；
 4. 通过微信（例如发送到文件传输助手）将 Token 发送给手机并复制。
 
+备选 Token：
+```text
+d01fb845-d11f-43e8-a9b2-296197f1ca76
+```
+
 ### 第二步：手机安装 App 并保存 Token
 1. 在安卓手机上下载并安装 [ChargingStationMonitor-v1.0.0.apk](https://github.com/Breeze1733/empty-charging-stations/releases/download/v1.0.0/ChargingStationMonitor-v1.0.0.apk)（手机 App，约 5.2MB）；
 2. 打开 App，点击右上角设置按钮；
