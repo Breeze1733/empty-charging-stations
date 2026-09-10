@@ -1,82 +1,88 @@
 # 大学城充电桩监测 (University City Charging Station Monitor)
 
-针对广州大学城（华工大学城 C15 网点等）智能充电桩实时空闲情况的检测工具套件。
+针对广州大学城（华工大学城 C15 网点等）智能充电桩实时可用性的轻量检测工具套件。
 
-本项目包含两个核心软件：
-1. **电脑端 Token 一键提取器 (Python GUI / CLI)**：微信电脑端打开“智能充电”小程序后，1秒内自动从进程内存提取最新 Token 并写入系统剪贴板。
-2. **手机安卓端 App《大学城充电桩监测》 (Android Native)**：提供 Token 设置/持久化保存，实时监控华工 C15 的 1号、2号、3号、4号充电桩（共48个插口）的空闲与占用情况。
+[![GitHub Release](https://img.shields.io/github/v/release/Breeze1733/empty-charging-stations?color=10B981&label=Release&logo=android)](https://github.com/Breeze1733/empty-charging-stations/releases/latest)
+[![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20Windows-blue)](https://github.com/Breeze1733/empty-charging-stations)
+[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+
+> 📲 **开箱即用安装包**：[👉 点击前往 GitHub Releases 下载最新 APK](https://github.com/Breeze1733/empty-charging-stations/releases/latest) （或直接下载 [`ChargingStationMonitor-v1.0.0.apk`](https://github.com/Breeze1733/empty-charging-stations/releases/download/v1.0.0/ChargingStationMonitor-v1.0.0.apk)）
 
 ---
 
-## 📱 软件一览
+## 📖 极简使用指南 (三步上手)
 
-### 1. 手机安卓 APP（大学城充电桩监测）
-- **安装包直接下载**：根目录下 [`大学城充电桩监测.apk`](大学城充电桩监测.apk) (约 5.2MB)
-- **源码工程**：[`android_app/`](android_app/)
-- **功能特性**：
-  - **设置栏**：支持一键从剪贴板粘贴 Token、清空、测试并保存。采用 Android 原生 `SharedPreferences` 存储，退出或重启手机不丢失。Token 过期可随时在设置中修改。
-  - **总览看板**：直观展示当前 4 桩总空闲插口数（如 `7 / 48 口可用`）以及最近数据更新时间。
-  - **4 桩独立卡片**：1号桩、2号桩、3号桩、4号桩各一张卡片，显示设备编码与空闲数统计。
-  - **12 格插口矩阵**：每桩以 6列 x 2行 直观呈现 `01` 到 `12` 号插口：
-    - 🟢 **绿色高亮**：空闲可用（如 `11 空闲`）
-    - ⚪ **浅灰色**：已被占用（如 `01 占用`）
-  - **刷新交互**：支持下拉刷新（`SwipeRefreshLayout`）与右上角刷新按钮；Token 失效时顶部自动弹出红色提醒条，点击一键跳转设置。
+### 第一步：电脑微信提取 Token
+1. 在电脑微信中打开 **“智能充电”** 小程序并进入首页；
+2. 双击运行仓库根目录下的 [`运行Token提取器.bat`](运行Token提取器.bat)（或在终端执行 `python token_extractor.py`）；
+3. 点击 **“🚀 一键提取最新 Token”**，程序在 1 秒内自动从微信内存提取凭证，并**自动复制到系统剪贴板**；
+4. 通过微信“文件传输助手”将 Token 发送到手机并复制。
+
+### 第二步：手机安装 App 并保存 Token
+1. 在手机上下载并安装 [**大学城充电桩监测.apk**](https://github.com/Breeze1733/empty-charging-stations/releases/latest)；
+2. 打开 App，点击右上角 ⚙️ **设置** 图标；
+3. 点击 **“📋 粘贴剪贴板”**（或手动粘贴），再点击 **“💾 验证并保存 Token”**；
+4. 提示“验证成功”后，Token 会永久保存在手机中（杀后台或关机重启均不丢失）。
+
+### 第三步：随时查看实时空闲状态
+1. 返回 App 主界面，即时呈现华工大学城 C15 全部 4 台电桩（共 48 个插口）的状态：
+   - 🟢 **绿色高亮**：插口空闲可用（例如 `03 空闲`）；
+   - ⚪ **浅灰色**：已被占用（例如 `01 占用`）；
+2. 支持随时**下拉页面刷新**或点击右上角 **🔄 刷新** 按钮；
+3. **若 Token 后续失效**：界面顶部会自动弹出醒目的红色提醒条，点击即可直接进入设置更新。
+
+---
+
+## 📱 软件组成与特性
+
+### 1. 手机安卓端 App《大学城充电桩监测》
+- **纯原生轻量设计**：仅约 5.2MB，内置 Java 原生 DES-ECB 解密与 HTTPS 通信，兼容 Android 7.0 至 Android 15。
+- **持久化配置**：通过 Android 原生 `SharedPreferences` 本地管理 Token，永不泄露至第三方云。
+- **总览看板**：汇总统计当前 4 桩总可用空闲口（如 `7 / 48 口可用`）及精准更新时间。
+- **12 格卡片矩阵**：1~4号桩各一张卡片，以 6列 x 2行 的网格清晰排列 `01` 到 `12` 号插口，空闲与占用一目了然。
 
 ### 2. 电脑端 Token 一键提取器
-- **双击运行脚本**：[`运行Token提取器.bat`](运行Token提取器.bat)
-- **源码文件**：[`token_extractor.py`](token_extractor.py)
-- **功能特性**：
-  - 自动扫描运行中的 PC 微信小程序进程（`WeChatAppEx.exe`）内存，无需手动抓包或代理配置，约 1 秒提取出 Token、UserId 及绑定手机号。
-  - 自动写入 Windows 剪贴板，支持重新复制。
-  - 发起轻量云端心跳自动检测 Token 有效性，提示“有效可用 ✅”或“已失效 ❌”。
-  - 支持命令行模式：`python token_extractor.py --cli`。
+- **零配置提取**：无需配置 Fiddler、Charles 等抓包工具或证书，自动根据进程特征检索 `WeChatAppEx.exe` 内存堆栈。
+- **在线自检**：提取同时向服务端发送心跳探测包，提示“有效可用 ✅”或“已过期 ❌”。
+- **双模式支持**：默认提供精美 Tkinter 图形界面；也支持无头服务器模式：`python token_extractor.py --cli`。
+
+---
+
+## 🔌 华工大学城 C15 专属电桩拓扑
+
+经过服务端完整网点拓扑逆向与校验，已精确定位华工 C15 站点的 4 台充电桩：
+
+| 电桩名称 | 设备硬件编码 | 插口数 | 对应格口 |
+| :--- | :--- | :--- | :--- |
+| **1号充电桩** | `861714054442714` | 12 | 01 ~ 12 号口 |
+| **2号充电桩** | `861714054100585` | 12 | 01 ~ 12 号口 |
+| **3号充电桩** | `861714054436518` | 12 | 01 ~ 12 号口 |
+| **4号充电桩** | `863488056590576` | 12 | 01 ~ 12 号口 |
 
 ---
 
 ## 🛠️ 逆向协议与技术细节
 
 - **服务基址**：`https://hgcms.gzyzinfo.com:442/ChargeBoxService/`
-- **加密机制**：DES-ECB，PKCS5/PKCS7 Padding，密钥为 8 字节 `yz_cbox\0`
+- **加密机制**：DES-ECB，PKCS5/PKCS7 Padding，固定密钥为 8 字节 `yz_cbox\0`
 - **请求格式**：
   - `POST`，`Content-Type: application/x-www-form-urlencoded`
-  - 请求体：`para=<HEX_CIPHERTEXT>&mobileTime=<YYYY-MM-DD HH:mm:ss>&token=<TOKEN>`
+  - Body：`para=<HEX_CIPHERTEXT>&mobileTime=<YYYY-MM-DD HH:mm:ss>&token=<TOKEN>`
 - **核心接口**：
-  - `mobile/chargeLocker/stationList.do`：站点列表及 Token 有效性探测
+  - `mobile/chargeLocker/stationList.do`：站点列表及 Token 有效性自检探测
   - `mobile/chargeLocker/chargeBoxList.do`：查询指定电桩各格口状态（入参 `{"code": "<pileCode>"}`）
-- **华工大学城 C15 电桩编码**：
-  - **1号充电桩**：`861714054442714`（12口）
-  - **2号充电桩**：`861714054100585`（12口）
-  - **3号充电桩**：`861714054436518`（12口）
-  - **4号充电桩**：`863488056590576`（12口）
-
----
-
-## 🚀 极简使用指南
-
-1. **获取 Token**：
-   - 电脑微信打开“智能充电”小程序进入首页；
-   - 双击运行根目录下的 `运行Token提取器.bat`（或在终端运行 `python token_extractor.py`）；
-   - 点击“🚀 一键提取最新 Token”，Token 会自动复制到剪贴板；
-   - 通过微信将 Token 发送给手机（如发送到微信“文件传输助手”）。
-
-2. **手机端使用**：
-   - 将根目录下的 `大学城充电桩监测.apk` 发送至手机安装；
-   - 打开 App，点击右上角 ⚙️ **设置** 图标；
-   - 点击 **“📋 粘贴剪贴板”**，然后点击 **“💾 验证并保存 Token”**；
-   - 返回主页，即可随时下拉刷新查看华工 C15 的 1、2、3、4 号电桩各个插口的实时空闲状态。
 
 ---
 
 ## 📂 项目结构
 
 ```text
-├── 大学城充电桩监测.apk     # 已编译的 Android 手机安装包
-├── 运行Token提取器.bat      # 电脑端 Token 提取器一键启动脚本
+├── 运行Token提取器.bat      # 电脑端 Token 提取器双击启动脚本
 ├── token_extractor.py     # 电脑端 Token 提取器源码 (Tkinter GUI / CLI)
-├── charge_client.py       # Python 版协议客户端及测试命令行工具
-├── session.example.json   # 会话凭据配置示例文件
-├── README.md              # 项目说明文档
-└── android_app/           # Android Studio 原生安卓工程源码
+├── charge_client.py       # Python 协议客户端与接口调试工具
+├── session.example.json   # 会话凭据配置示例模板
+├── README.md              # 项目文档与使用指南
+└── android_app/           # Android Studio 原生安卓工程完整源码
     ├── app/
     │   └── src/main/
     │       ├── AndroidManifest.xml
@@ -90,3 +96,9 @@
     ├── build.gradle
     └── settings.gradle
 ```
+
+---
+
+## ⚠️ 免责声明
+
+本项目仅供华南理工大学等高校师生个人学习、充电便捷检测及逆向协议学术研究所用，不作任何商业用途。
