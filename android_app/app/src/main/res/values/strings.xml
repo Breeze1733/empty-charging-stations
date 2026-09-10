@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">大学城充电桩监测</string>
+    <string name="title_c15">大学城充电桩监测</string>
+    <string name="subtitle_c15">华工大学城 C15 实时空闲监测</string>
+    <string name="settings">设置</string>
+    <string name="refresh">刷新</string>
+</resources>
