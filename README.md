@@ -2,30 +2,35 @@
 
 针对广州大学城（华工大学城 C15 网点等）智能充电桩实时可用性的轻量检测工具套件。
 
-[![GitHub Release](https://img.shields.io/github/v/release/Breeze1733/empty-charging-stations?color=10B981&label=Release&logo=android)](https://github.com/Breeze1733/empty-charging-stations/releases/latest)
+[![GitHub Release](https://img.shields.io/github/v/release/Breeze1733/empty-charging-stations?color=10B981&label=Release&logo=github)](https://github.com/Breeze1733/empty-charging-stations/releases/latest)
 [![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20Windows-blue)](https://github.com/Breeze1733/empty-charging-stations)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
-> 📲 **开箱即用安装包**：[👉 点击前往 GitHub Releases 下载最新 APK](https://github.com/Breeze1733/empty-charging-stations/releases/latest) （或直接下载 [`ChargingStationMonitor-v1.0.0.apk`](https://github.com/Breeze1733/empty-charging-stations/releases/download/v1.0.0/ChargingStationMonitor-v1.0.0.apk)）
+> ### 📦 **开箱即用下载 (无需配置环境，双击即用)**
+> - 📱 **安卓手机 App 安装包**：[👉 点击下载 ChargingStationMonitor-v1.0.0.apk (约 5.2MB)](https://github.com/Breeze1733/empty-charging-stations/releases/download/v1.0.0/ChargingStationMonitor-v1.0.0.apk)
+> - 💻 **电脑端 Token 一键提取器 (免Python环境独立程序)**：[👉 点击下载 TokenExtractor-v1.0.0.exe (约 19.7MB)](https://github.com/Breeze1733/empty-charging-stations/releases/download/v1.0.0/TokenExtractor-v1.0.0.exe)
+> - 🔗 [前往 GitHub Releases 页面查看所有版本发行](https://github.com/Breeze1733/empty-charging-stations/releases/latest)
 
 ---
 
 ## 📖 极简使用指南 (三步上手)
 
-### 第一步：电脑微信提取 Token
+### 第一步：电脑端提取 Token
 1. 在电脑微信中打开 **“智能充电”** 小程序并进入首页；
-2. 双击运行仓库根目录下的 [`运行Token提取器.bat`](运行Token提取器.bat)（或在终端执行 `python token_extractor.py`）；
-3. 点击 **“🚀 一键提取最新 Token”**，程序在 1 秒内自动从微信内存提取凭证，并**自动复制到系统剪贴板**；
-4. 通过微信“文件传输助手”将 Token 发送到手机并复制。
+2. 运行电脑端提取工具（**二选一**）：
+   - **方式 A (推荐)**：直接双击下载的 [`TokenExtractor.exe`](https://github.com/Breeze1733/empty-charging-stations/releases/download/v1.0.0/TokenExtractor-v1.0.0.exe) 独立可执行程序（电脑无需安装 Python）；
+   - **方式 B (源码)**：在仓库根目录双击运行 [`运行Token提取器.bat`](运行Token提取器.bat) 或执行 `python token_extractor.py`；
+3. 点击 **“🚀 一键提取最新 Token”**，程序在 1 秒内自动扫描内存，提取 Token 并**自动复制到系统剪贴板**；
+4. 通过微信“文件传输助手”发送给手机并复制该 Token。
 
 ### 第二步：手机安装 App 并保存 Token
-1. 在手机上下载并安装 [**大学城充电桩监测.apk**](https://github.com/Breeze1733/empty-charging-stations/releases/latest)；
+1. 在安卓手机上下载并安装 [**ChargingStationMonitor-v1.0.0.apk**](https://github.com/Breeze1733/empty-charging-stations/releases/download/v1.0.0/ChargingStationMonitor-v1.0.0.apk)；
 2. 打开 App，点击右上角 ⚙️ **设置** 图标；
-3. 点击 **“📋 粘贴剪贴板”**（或手动粘贴），再点击 **“💾 验证并保存 Token”**；
-4. 提示“验证成功”后，Token 会永久保存在手机中（杀后台或关机重启均不丢失）。
+3. 点击 **“📋 粘贴剪贴板”**（或长按手动粘贴），再点击 **“💾 验证并保存 Token”**；
+4. 提示“验证成功”后，Token 会持久化保存在手机中（杀后台或手机重启均不丢失）。
 
 ### 第三步：随时查看实时空闲状态
-1. 返回 App 主界面，即时呈现华工大学城 C15 全部 4 台电桩（共 48 个插口）的状态：
+1. 返回 App 主界面，即时呈现华工大学城 C15 全部 4 台电桩（共 48 个插口）的占用情况：
    - 🟢 **绿色高亮**：插口空闲可用（例如 `03 空闲`）；
    - ⚪ **浅灰色**：已被占用（例如 `01 占用`）；
 2. 支持随时**下拉页面刷新**或点击右上角 **🔄 刷新** 按钮；
@@ -37,14 +42,15 @@
 
 ### 1. 手机安卓端 App《大学城充电桩监测》
 - **纯原生轻量设计**：仅约 5.2MB，内置 Java 原生 DES-ECB 解密与 HTTPS 通信，兼容 Android 7.0 至 Android 15。
-- **持久化配置**：通过 Android 原生 `SharedPreferences` 本地管理 Token，永不泄露至第三方云。
+- **持久化配置**：通过 Android 原生 `SharedPreferences` 本地管理 Token，安全可靠。
 - **总览看板**：汇总统计当前 4 桩总可用空闲口（如 `7 / 48 口可用`）及精准更新时间。
 - **12 格卡片矩阵**：1~4号桩各一张卡片，以 6列 x 2行 的网格清晰排列 `01` 到 `12` 号插口，空闲与占用一目了然。
 
 ### 2. 电脑端 Token 一键提取器
-- **零配置提取**：无需配置 Fiddler、Charles 等抓包工具或证书，自动根据进程特征检索 `WeChatAppEx.exe` 内存堆栈。
+- **独立打包**：提供已打包为单文件的 Windows 可执行程序 `TokenExtractor.exe`，免去安装 Python 与第三方依赖的麻烦。
+- **零配置提取**：无需配置代理抓包或伪装，自动定位 `WeChatAppEx.exe` 进程内存堆栈。
 - **在线自检**：提取同时向服务端发送心跳探测包，提示“有效可用 ✅”或“已过期 ❌”。
-- **双模式支持**：默认提供精美 Tkinter 图形界面；也支持无头服务器模式：`python token_extractor.py --cli`。
+- **双模式支持**：默认提供精美图形界面；源码模式下亦支持无头命令行提取：`python token_extractor.py --cli`。
 
 ---
 
@@ -77,7 +83,7 @@
 ## 📂 项目结构
 
 ```text
-├── 运行Token提取器.bat      # 电脑端 Token 提取器双击启动脚本
+├── 运行Token提取器.bat      # 电脑端 Token 提取器双击启动脚本 (Python环境)
 ├── token_extractor.py     # 电脑端 Token 提取器源码 (Tkinter GUI / CLI)
 ├── charge_client.py       # Python 协议客户端与接口调试工具
 ├── session.example.json   # 会话凭据配置示例模板
@@ -101,4 +107,4 @@
 
 ## ⚠️ 免责声明
 
-本项目仅供华南理工大学等高校师生个人学习、充电便捷检测及逆向协议学术研究所用，不作任何商业用途。
+本项目仅供高校师生个人学习、充电便捷检测及逆向协议学术研究所用，不作任何商业用途。

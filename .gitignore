@@ -7,6 +7,10 @@ __pycache__/
 env/
 venv/
 session.json
+build/
+dist/
+*.spec
+*.exe
 
 # Android
 *.apk
@@ -15,7 +19,6 @@ android_app/build/
 android_app/app/build/
 android_app/local.properties
 .gradle/
-build/
 *.iml
 .idea/
 
