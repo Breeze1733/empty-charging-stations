@@ -9,7 +9,7 @@
 ## 使用指南
 
 ### 第一步：电脑提取 Token
-1. 在 Windows 电脑端微信中打开“智能充电”小程序并进入首页；
+1. 在 Windows 电脑端微信中打开“小盈充电”小程序并进入首页；
 2. 下载并打开电脑提取工具 [TokenExtractor-v1.0.0.exe](https://github.com/Breeze1733/empty-charging-stations/releases/download/v1.0.0/TokenExtractor-v1.0.0.exe)（免安装绿色程序，约 19.7MB）；
 3. 点击界面中的“一键提取最新 Token”按钮，程序会自动获取并写入系统剪贴板；
 4. 通过微信（例如发送到文件传输助手）将 Token 发送给手机并复制。
