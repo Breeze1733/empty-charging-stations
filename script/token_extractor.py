@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-智能充电 - PC微信小程序 Token 提取器
-双击直接运行图形界面，也可使用命令行模式 (--cli)。
+智能充电 - PC 微信小程序 Token 提取器
+通过直接检索微信小程序进程内存，提取登录凭证 Token 并写入系统剪贴板。
 """
 import sys
 if hasattr(sys.stdout, "reconfigure"):
@@ -28,10 +28,22 @@ urllib3.disable_warnings()
 BASE_URL = "https://hgcms.gzyzinfo.com:442/ChargeBoxService/"
 DES_KEY = b"yz_cbox\x00"
 
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+SESSION_FILE = os.path.join(SCRIPT_DIR, "session.json")
+
 kernel32 = ctypes.windll.kernel32
 user32 = ctypes.windll.user32
 
-class MEMORY_BASIC_INFORMATION(ctypes.Structure):
+kernel32.GlobalAlloc.restype = ctypes.c_void_p
+kernel32.GlobalAlloc.argtypes = [ctypes.c_uint, ctypes.c_size_t]
+kernel32.GlobalLock.restype = ctypes.c_void_p
+kernel32.GlobalLock.argtypes = [ctypes.c_void_p]
+kernel32.GlobalUnlock.argtypes = [ctypes.c_void_p]
+user32.SetClipboardData.restype = ctypes.c_void_p
+user32.SetClipboardData.argtypes = [ctypes.c_uint, ctypes.c_void_p]
+
+
+class MemoryBasicInformation(ctypes.Structure):
     _fields_ = [
         ("BaseAddress", ctypes.c_void_p),
         ("AllocationBase", ctypes.c_void_p),
@@ -42,16 +54,9 @@ class MEMORY_BASIC_INFORMATION(ctypes.Structure):
         ("Type", wintypes.DWORD),
     ]
 
-kernel32.GlobalAlloc.restype = ctypes.c_void_p
-kernel32.GlobalAlloc.argtypes = [ctypes.c_uint, ctypes.c_size_t]
-kernel32.GlobalLock.restype = ctypes.c_void_p
-kernel32.GlobalLock.argtypes = [ctypes.c_void_p]
-kernel32.GlobalUnlock.argtypes = [ctypes.c_void_p]
-user32.SetClipboardData.restype = ctypes.c_void_p
-user32.SetClipboardData.argtypes = [ctypes.c_uint, ctypes.c_void_p]
 
 def copy_to_clipboard(text: str) -> bool:
-    """直接调用 Windows 底层 API 写入系统剪贴板（支持 64 位指针）"""
+    """直接调用 Windows 底层 API 写入系统剪贴板"""
     try:
         if not user32.OpenClipboard(None):
             return False
@@ -68,14 +73,16 @@ def copy_to_clipboard(text: str) -> bool:
     except Exception:
         return False
 
+
 def encrypt_des(data_dict: dict) -> str:
     """DES-ECB PKCS7 加密，输出十六进制字符串"""
     cipher = DES.new(DES_KEY, DES.MODE_ECB)
     raw = json.dumps(data_dict, separators=(",", ":")).encode("utf-8")
     return cipher.encrypt(pad(raw, DES.block_size, style="pkcs7")).hex()
 
+
 def verify_token(token: str) -> bool:
-    """向服务端发起测试请求验证 Token 是否有效"""
+    """向服务端发起轻量测试请求验证 Token 是否有效"""
     try:
         now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         para = encrypt_des({})
@@ -87,19 +94,20 @@ def verify_token(token: str) -> bool:
     except Exception:
         return False
 
+
 def grab_session_from_wechat():
     """
-    从正在运行的 PC 微信小程序进程 (WeChatAppEx.exe) 内存中提取 Token、UserId 和 Phone
-    优先扫描最新启动的小程序进程，通常耗时只需 0.5 ~ 1 秒。
+    从运行中的 PC 微信小程序 (WeChatAppEx.exe) 内存提取 Token、UserId 和 Phone
+    通常耗时仅 0.5 ~ 1 秒。
     """
     procs = [p for p in psutil.process_iter(["pid", "name", "create_time"]) if p.info["name"] and "WeChatAppEx" in p.info["name"]]
     if not procs:
-        return None, "未检测到运行中的 PC 微信小程序 (WeChatAppEx.exe)，请先打开“智能充电”小程序！"
+        return None, "未检测到运行中的 PC 微信小程序 (WeChatAppEx.exe)，请先在电脑微信中打开“智能充电”小程序！"
 
-    # 按创建时间倒序排，最新运行的小程序窗口排在最前面
+    # 按进程创建时间倒序排，最新运行的排在最前
     procs.sort(key=lambda x: x.info["create_time"] or 0, reverse=True)
 
-    mbi = MEMORY_BASIC_INFORMATION()
+    mbi = MemoryBasicInformation()
     mbi_size = ctypes.sizeof(mbi)
 
     for proc in procs:
@@ -111,17 +119,13 @@ def grab_session_from_wechat():
         found_data = None
 
         while kernel32.VirtualQueryEx(h, ctypes.c_void_p(addr), ctypes.byref(mbi), mbi_size):
-            # MEM_COMMIT (0x1000) 且有读权限，排除不可读/PAGE_GUARD
             if mbi.State == 0x1000 and (mbi.Protect & 0xEE) and not (mbi.Protect & 0x100):
-                # 过滤过大的映射段，加快速度
                 if mbi.RegionSize <= 32 * 1024 * 1024:
                     buf = ctypes.create_string_buffer(mbi.RegionSize)
-                    bytesRead = ctypes.c_size_t()
-                    if kernel32.ReadProcessMemory(h, ctypes.c_void_p(mbi.BaseAddress), buf, mbi.RegionSize, ctypes.byref(bytesRead)):
-                        data = buf.raw[:bytesRead.value]
+                    bytes_read = ctypes.c_size_t()
+                    if kernel32.ReadProcessMemory(h, ctypes.c_void_p(mbi.BaseAddress), buf, mbi.RegionSize, ctypes.byref(bytes_read)):
+                        data = buf.raw[:bytes_read.value]
                         if b'"token":' in data and b'"userId":' in data:
-                            # 匹配 JSON 格式的 LOGININFO
-                            # 形如: {"image":"","phone":"18929712079",...,"userId":12193,...,"token":"d01fb845-..."}
                             idx = data.find(b'"token":')
                             while idx != -1:
                                 start = data.rfind(b"{", max(0, idx - 400), idx)
@@ -150,13 +154,14 @@ def grab_session_from_wechat():
 
 
 class ExtractorGUI:
+    """Tkinter 现代化轻量图形界面"""
+
     def __init__(self, root):
         self.root = root
         self.root.title("⚡ 智能充电 - Token 一键提取器")
         self.root.geometry("580x440")
         self.root.resizable(False, False)
 
-        # 尝试设置界面主题
         style = ttk.Style()
         try:
             style.theme_use("clam")
@@ -165,7 +170,7 @@ class ExtractorGUI:
 
         self.root.configure(bg="#F4F6F9")
 
-        # 顶部绿色标题栏
+        # 顶部标题栏
         header_frame = tk.Frame(root, bg="#10B981", height=75)
         header_frame.pack(fill=tk.X)
 
@@ -191,7 +196,7 @@ class ExtractorGUI:
         card = tk.Frame(root, bg="white", bd=0, highlightthickness=1, highlightbackground="#E5E7EB")
         card.pack(fill=tk.BOTH, expand=True, padx=20, pady=15)
 
-        # 状态提示条
+        # 状态提示
         self.status_var = tk.StringVar(value="准备就绪：请确保电脑微信已打开“智能充电”小程序")
         self.status_label = tk.Label(
             card,
@@ -219,7 +224,7 @@ class ExtractorGUI:
         )
         self.extract_btn.pack(pady=6)
 
-        # 用户信息展示栏
+        # 用户信息栏
         info_frame = tk.Frame(card, bg="#F9FAFB", bd=1, relief=tk.SOLID)
         info_frame.pack(fill=tk.X, padx=15, pady=10)
 
@@ -306,10 +311,8 @@ class ExtractorGUI:
         self.token_entry.delete(0, tk.END)
         self.token_entry.insert(0, token)
 
-        # 自动写入 Windows 剪贴板
         copy_to_clipboard(token)
 
-        # 验证有效性
         self.status_var.set("🔍 正在连接服务端验证 Token 有效性...")
         self.root.update()
 
@@ -321,10 +324,9 @@ class ExtractorGUI:
 
         if is_valid:
             self.status_var.set("🎉 Token 提取成功且已通过服务端验证！已自动复制到剪贴板！")
-            self.tip_var.set(f"更新时间: {datetime.datetime.now().strftime("%H:%M:%S")} (已保存到本地 session.json)")
-            # 持久化到本地文件
+            self.tip_var.set(f"更新时间: {datetime.datetime.now().strftime('%H:%M:%S')} (已保存到本地 session.json)")
             try:
-                with open("session.json", "w", encoding="utf-8") as f:
+                with open(SESSION_FILE, "w", encoding="utf-8") as f:
                     json.dump({
                         "token": token,
                         "userId": user_id,
@@ -354,14 +356,13 @@ if __name__ == "__main__":
             token, user_id, phone = session
             copy_to_clipboard(token)
             valid = verify_token(token)
-            print(f"[+] 提取成功!")
+            print("[+] 提取成功!")
             print(f"    Token: {token}")
             print(f"    User ID: {user_id}")
             print(f"    Phone: {phone}")
-            print(f"    云端校验: {"有效可用" if valid else "无效或已过期"}")
-            print(f"[+] 已自动将 Token 复制到系统剪贴板！")
-            # 持久化到 session.json
-            with open("session.json", "w", encoding="utf-8") as f:
+            print(f"    云端校验: {'有效可用' if valid else '无效或已过期'}")
+            print("[+] 已自动将 Token 复制到系统剪贴板！")
+            with open(SESSION_FILE, "w", encoding="utf-8") as f:
                 json.dump({
                     "token": token,
                     "userId": user_id,
