@@ -1,63 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_main">
+    android:background="@color/bg_main"
+    tools:context=".MainActivity">
 
+    <!-- 顶部导航栏 -->
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar">
+        android:elevation="3dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="48dp"
             android:background="@color/primary"
-            app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light">
+            app:contentInsetStart="12dp"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingEnd="12dp">
+                android:paddingEnd="8dp">
 
                 <TextView
-                    android:id="@+id/tv_toolbar_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:text="大学城充电桩监测"
+                    android:text="华工大学城 C15"
                     android:textColor="#FFFFFF"
-                    android:textSize="18sp"
+                    android:textSize="16sp"
                     android:textStyle="bold" />
 
+                <!-- 刷新按钮 (位于最右侧) -->
                 <ImageView
-                    android:id="@+id/btn_settings"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:id="@+id/btn_refresh"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:padding="8dp"
-                    android:src="@android:drawable/ic_menu_preferences"
-                    app:tint="#FFFFFF" />
-
-                <ImageView
-                    android:id="@+id/btn_refresh"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_centerVertical="true"
-                    android:layout_toStartOf="@id/btn_settings"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:padding="8dp"
+                    android:padding="7dp"
                     android:src="@android:drawable/ic_popup_sync"
                     app:tint="#FFFFFF" />
+
+                <!-- 视图切换按钮 (文字按钮: 切换视图，位于刷新按钮左侧) -->
+                <TextView
+                    android:id="@+id/btn_switch_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="28dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toStartOf="@id/btn_refresh"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/bg_toolbar_text_btn"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:text="切换视图"
+                    android:textColor="#FFFFFF"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
 
             </RelativeLayout>
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
+    <!-- 下拉刷新布局 -->
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
@@ -73,56 +88,124 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:paddingStart="8dp"
+                android:paddingTop="5dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="6dp">
 
-                <!-- 警告横幅：Token 未设置或已失效时显示 -->
+                <!-- 警告横幅：Token 未设置或已失效时显示 (已硬编码默认 Token，默认隐藏) -->
                 <LinearLayout
                     android:id="@+id/banner_token_warning"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="14dp"
+                    android:layout_marginBottom="6dp"
                     android:background="@drawable/bg_banner_warn"
-                    android:clickable="true"
-                    android:focusable="true"
                     android:orientation="horizontal"
-                    android:padding="12dp"
+                    android:padding="8dp"
                     android:visibility="gone">
 
                     <ImageView
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
                         android:layout_gravity="center_vertical"
                         android:src="@android:drawable/ic_dialog_alert"
                         app:tint="#DC2626" />
 
                     <TextView
-                        android:id="@+id/tv_token_warning"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginStart="10dp"
+                        android:layout_marginStart="6dp"
                         android:layout_weight="1"
-                        android:text="Token 未设置或已失效，请点击此处进入设置粘贴最新 Token！"
+                        android:text="Token 已失效，请联系作者更新 (h719860137@gmail.com)"
                         android:textColor="#B91C1C"
-                        android:textSize="13sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:text="去设置 >"
-                        android:textColor="#B91C1C"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
+                        android:textSize="11.5sp" />
                 </LinearLayout>
 
-                <!-- 汇总卡片 -->
+                <!-- 概览卡片：超紧凑型总空闲数与更新时间 -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="14dp"
-                    app:cardCornerRadius="14dp"
-                    app:cardElevation="2dp"
+                    android:layout_marginBottom="5dp"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="1dp"
+                    app:strokeColor="#E5E7EB"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#FFFFFF"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingStart="8dp"
+                        android:paddingTop="5dp"
+                        android:paddingEnd="8dp"
+                        android:paddingBottom="5dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:includeFontPadding="false"
+                            android:text="⚡ 空闲: "
+                            android:textColor="@color/text_sub"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/tv_total_free"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:includeFontPadding="false"
+                            android:text="--"
+                            android:textColor="@color/primary"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="2dp"
+                            android:layout_weight="1"
+                            android:includeFontPadding="false"
+                            android:text="/ 48 口可用"
+                            android:textColor="@color/text_sub"
+                            android:textSize="11.5sp" />
+
+                        <TextView
+                            android:id="@+id/tv_update_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="6dp"
+                            android:includeFontPadding="false"
+                            android:text="更新时间: --"
+                            android:textColor="@color/text_hint"
+                            android:textSize="10.5sp" />
+
+                        <TextView
+                            android:id="@+id/tv_status_badge"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_badge_free"
+                            android:includeFontPadding="false"
+                            android:paddingStart="7dp"
+                            android:paddingTop="2dp"
+                            android:paddingEnd="7dp"
+                            android:paddingBottom="2dp"
+                            android:text="加载中..."
+                            android:textColor="#FFFFFF"
+                            android:textSize="10.5sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- 地图视图卡片容器 (南北贯通走廊与实际隔板，超紧凑设计尽量一屏展示完) -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/layout_map_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="1dp"
                     app:strokeColor="#E5E7EB"
                     app:strokeWidth="1dp">
 
@@ -131,111 +214,191 @@
                         android:layout_height="wrap_content"
                         android:background="#FFFFFF"
                         android:orientation="vertical"
-                        android:padding="16dp">
+                        android:padding="5dp">
 
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="📍 华工大学城 C15 充电站"
-                                android:textColor="@color/text_title"
-                                android:textSize="16sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/tv_update_time"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:text="更新时间: --"
-                                android:textColor="@color/text_sub"
-                                android:textSize="12sp" />
-                        </RelativeLayout>
-
+                        <!-- ================= 北区通道区域 (第1排到第19排) ================= -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="14dp"
-                            android:gravity="center_vertical"
+                            android:baselineAligned="false"
                             android:orientation="horizontal">
 
+                            <!-- 北区左侧电桩 (2号桩 12~01，1号桩 12~07，紧凑正方形示意) -->
                             <LinearLayout
-                                android:layout_width="0dp"
+                                android:id="@+id/layout_map_north_left"
+                                android:layout_width="32dp"
                                 android:layout_height="wrap_content"
+                                android:orientation="vertical" />
+
+                            <!-- 北区中心长条过道大方框 (宽敞大走道) -->
+                            <LinearLayout
+                                android:id="@+id/layout_map_north_aisle"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
                                 android:layout_weight="1"
+                                android:layout_marginStart="3dp"
+                                android:layout_marginEnd="3dp"
+                                android:background="@drawable/bg_aisle_long_box"
+                                android:gravity="center_horizontal"
                                 android:orientation="vertical">
 
                                 <TextView
+                                    android:id="@+id/tv_north_entrance"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="当前空闲插口数"
-                                    android:textColor="@color/text_sub"
-                                    android:textSize="13sp" />
+                                    android:layout_marginTop="3dp"
+                                    android:gravity="center"
+                                    android:includeFontPadding="false"
+                                    android:text="北入口 ⬇"
+                                    android:textColor="#059669"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
 
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="2dp"
-                                    android:gravity="bottom"
-                                    android:orientation="horizontal">
-
-                                    <TextView
-                                        android:id="@+id/tv_total_free"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="--"
-                                        android:textColor="@color/primary"
-                                        android:textSize="32sp"
-                                        android:textStyle="bold" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="4dp"
-                                        android:layout_marginBottom="6dp"
-                                        android:text="/ 48 口可用"
-                                        android:textColor="@color/text_sub"
-                                        android:textSize="14sp" />
-                                </LinearLayout>
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0dp"
+                                    android:layout_weight="1"
+                                    android:gravity="center"
+                                    android:includeFontPadding="false"
+                                    android:letterSpacing="0.2"
+                                    android:text="过          道"
+                                    android:textColor="#94A3B8"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
                             </LinearLayout>
 
+                            <!-- 北区右侧电桩 (3号桩 01~12，4号桩 01~06，紧凑正方形示意) -->
+                            <LinearLayout
+                                android:id="@+id/layout_map_north_right"
+                                android:layout_width="32dp"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical" />
+                        </LinearLayout>
+
+                        <!-- ================= 阻断隔板墙 (位于1-06、4-07上方，横跨整棚，过道隔断不可通行) ================= -->
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="4dp"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginBottom="2dp"
+                            android:background="@drawable/bg_barrier_full" />
+
+                        <!-- ================= 南区通道区域 (第20排到第25排) ================= -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:baselineAligned="false"
+                            android:orientation="horizontal">
+
+                            <!-- 南区左侧电桩 (1号桩 06~01，紧凑正方形示意) -->
+                            <LinearLayout
+                                android:id="@+id/layout_map_south_left"
+                                android:layout_width="32dp"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical" />
+
+                            <!-- 南区中心长条过道大方框 (宽敞大走道) -->
+                            <LinearLayout
+                                android:id="@+id/layout_map_south_aisle"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:layout_marginStart="3dp"
+                                android:layout_marginEnd="3dp"
+                                android:background="@drawable/bg_aisle_long_box"
+                                android:gravity="center_horizontal"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0dp"
+                                    android:layout_weight="1"
+                                    android:gravity="center"
+                                    android:includeFontPadding="false"
+                                    android:letterSpacing="0.2"
+                                    android:text="过      道"
+                                    android:textColor="#94A3B8"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tv_south_entrance"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="3dp"
+                                    android:gravity="center"
+                                    android:includeFontPadding="false"
+                                    android:text="▲ 南入口"
+                                    android:textColor="#059669"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <!-- 南区右侧电桩 (4号桩 07~12，紧凑正方形示意) -->
+                            <LinearLayout
+                                android:id="@+id/layout_map_south_right"
+                                android:layout_width="32dp"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical" />
+                        </LinearLayout>
+
+                        <!-- 地图底部微型图例说明 -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="14dp"
+                            android:layout_marginTop="3dp"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <View
+                                android:layout_width="7dp"
+                                android:layout_height="7dp"
+                                android:background="@drawable/bg_port_compact_free" />
+
                             <TextView
-                                android:id="@+id/tv_status_badge"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:background="@drawable/bg_badge_free"
-                                android:paddingStart="12dp"
-                                android:paddingTop="6dp"
-                                android:paddingEnd="12dp"
-                                android:paddingBottom="6dp"
-                                android:text="正在加载..."
-                                android:textColor="#FFFFFF"
-                                android:textSize="13sp"
+                                android:layout_marginStart="3dp"
+                                android:layout_marginEnd="10dp"
+                                android:includeFontPadding="false"
+                                android:text="可用空闲"
+                                android:textColor="#059669"
+                                android:textSize="9sp"
                                 android:textStyle="bold" />
+
+                            <View
+                                android:layout_width="7dp"
+                                android:layout_height="7dp"
+                                android:background="@drawable/bg_port_compact_busy" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="3dp"
+                                android:layout_marginEnd="10dp"
+                                android:includeFontPadding="false"
+                                android:text="已被占用"
+                                android:textColor="#6B7280"
+                                android:textSize="9sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:includeFontPadding="false"
+                                android:text="(下拉或右上角可刷新)"
+                                android:textColor="@color/text_hint"
+                                android:textSize="8.5sp" />
                         </LinearLayout>
+
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- 容器：动态加载 1、2、3、4 号电桩卡片 -->
+                <!-- 容器：列表视图下动态加载 1、2、3、4 号电桩卡片 -->
                 <LinearLayout
                     android:id="@+id/layout_piles_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical" />
-
-                <!-- 底部说明 -->
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="24dp"
-                    android:gravity="center"
-                    android:text="下拉页面或点击右上角刷新即可获取实时状态\n绿色表示可用空闲，灰色表示已被占用"
-                    android:textColor="@color/text_hint"
-                    android:textSize="12sp" />
 
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
