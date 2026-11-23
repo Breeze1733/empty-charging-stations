@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 public class TokenManager {
-    public static final String HARDCODED_TOKEN = "d01fb845-d11f-43e8-a9b2-296197f1ca76";
+    public static final String HARDCODED_TOKEN = "2a5e23f2-08a7-458a-a56f-7c6cef63c8df";
 
     private static final String PREF_NAME = "c15_charging_prefs";
     private static final String KEY_TOKEN = "app_token";
